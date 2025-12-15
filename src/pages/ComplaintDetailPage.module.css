@@ -1,0 +1,204 @@
+.container {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+
+.header {
+  background-color: #2563eb;
+  color: #ffffff;
+  padding: 1.5rem 2rem;
+  border-radius: 8px 8px 0 0;
+  margin-bottom: 2rem;
+}
+
+.headerTitle {
+  color: #ffffff;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.contentWrapper {
+  display: grid;
+  grid-template-columns: 1fr 350px;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.mainContent {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Description Box */
+.descriptionBox {
+  background-color: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+}
+
+.sectionTitle {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+.descriptionText {
+  color: #374151;
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+.resolutionBox {
+  background-color: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+}
+
+.resolutionText {
+  color: #374151;
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+.resolutionTextarea {
+  width: 100%;
+}
+
+.resolutionTextarea textarea {
+  font-size: 0.875rem;
+  line-height: 1.6;
+  min-height: 120px;
+}
+
+.detailsBox {
+  background-color: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+}
+
+.detailRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.detailRow:last-child {
+  border-bottom: none;
+}
+
+.detailLabel {
+  color: #6b7280;
+  font-size: 0.875rem;
+  min-width: 140px;
+}
+
+.detailValue {
+  color: #111827;
+  font-size: 0.875rem;
+  text-align: right;
+  flex: 1;
+}
+
+/* Timeline Box */
+.timelineBox {
+  background-color: #ffffff;
+  border: 2px solid #9333ea;
+  border-radius: 8px;
+}
+
+.timelineItem {
+  display: flex;
+  gap: 1rem;
+  position: relative;
+}
+
+.timelineItem:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 7px;
+  top: 24px;
+  bottom: -1rem;
+  width: 2px;
+  background-color: #d1d5db;
+}
+
+.timelineBullet {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background-color: #9333ea;
+  flex-shrink: 0;
+  margin-top: 2px;
+  position: relative;
+  z-index: 1;
+}
+
+.timelineContent {
+  flex: 1;
+  padding-bottom: 0.5rem;
+}
+
+.timelineEvent {
+  color: #111827;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+.timelineTimestamp {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.infoBox {
+  background-color: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+}
+
+.infoLabel {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+.infoInput {
+  width: 100%;
+}
+
+.infoInput input {
+  background-color: #ffffff;
+  border: 1px solid #d1d5db;
+  color: #111827;
+  font-size: 0.875rem;
+}
+
+.statusSelect {
+  width: 100%;
+}
+
+.statusSelect input {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.actionButtons {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-start;
+  margin-top: 1rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e5e7eb;
+}
