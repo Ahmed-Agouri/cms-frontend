@@ -3,6 +3,7 @@ import { HeaderTabs } from './components/HeaderTabs'
 import { HomePage } from './pages/HomePage'
 import { ComplaintPage } from './pages/ComplaintPage'
 import { CreateComplaintPage } from './pages/CreateComplaintPage'
+import { MyComplaintsPage } from './pages/MyComplaintsPage'
 import './App.css'
 
 function App() {
@@ -13,10 +14,11 @@ function App() {
         <main>
           <Routes>
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
-            <Route path="/dashboard" element={<HomePage />} />
+            <Route path="/dashboard" element={<MyComplaintsPage />} />
             <Route path="/complaint" element={<ComplaintPage />} />
             <Route path="/complaints" element={<ComplaintPage />} />
             <Route path="/complaints/create" element={<CreateComplaintPage />} />
+            <Route path="/complaints/:id" element={<ComplaintPage />} />
             <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </Routes>
         </main>

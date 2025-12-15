@@ -1,0 +1,190 @@
+.container {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+
+.header {
+  margin-bottom: 2rem;
+}
+
+.pageTitle {
+  color: #2563eb;
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.searchGroup {
+  display: flex;
+  gap: 1rem;
+  flex: 1;
+  min-width: 300px;
+}
+
+.searchInput {
+  flex: 1;
+  max-width: 400px;
+}
+
+.statusFilter {
+  width: 180px;
+}
+
+.newButton {
+  font-weight: 500;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+  margin-bottom: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  background-color: #ffffff;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tableHeader {
+  background-color: #9CA3AF;
+}
+
+.tableHeader th {
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: #ffffff;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.tableRow {
+  background-color: #ffffff;
+  transition: background-color 0.2s ease;
+}
+
+.tableRow:hover {
+  background-color: #f9fafb;
+}
+
+.tableRow td {
+  padding: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 0.875rem;
+}
+
+.reference {
+  color: #111827;
+  font-size: 0.875rem;
+}
+
+.title {
+  color: #111827;
+  font-size: 0.875rem;
+}
+
+.status {
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+
+.lastUpdated {
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.viewLink {
+  color: #2563eb;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: color 0.2s ease;
+}
+
+.viewLink:hover {
+  color: #1d4ed8;
+}
+
+.paginationWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 2rem;
+  padding: 1rem 0;
+}
+
+.ellipsis {
+  padding: 0 0.5rem;
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.activePage {
+  background-color: #2563eb;
+  color: #ffffff;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .searchGroup {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .searchInput {
+    max-width: 100%;
+  }
+
+  .statusFilter {
+    width: 100%;
+  }
+
+  .newButton {
+    width: 100%;
+  }
+
+  .tableWrapper {
+    overflow-x: scroll;
+  }
+
+  .tableHeader th,
+  .tableRow td {
+    padding: 0.75rem 0.5rem;
+    font-size: 0.75rem;
+  }
+
+  .paginationWrapper {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .pageTitle {
+    font-size: 1.5rem;
+  }
+
+  .tableHeader th,
+  .tableRow td {
+    padding: 0.5rem 0.25rem;
+    font-size: 0.7rem;
+  }
+}
+
