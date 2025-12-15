@@ -58,15 +58,12 @@ export function ComplaintPage() {
     setIsSubmitting(true);
     setShowSuccess(false);
 
-    // Simulate API call
     setTimeout(() => {
-      // Log form data to console
       console.log('Complaint submitted:', formData);
       
       setIsSubmitting(false);
       setShowSuccess(true);
       
-      // Reset form after successful submission
       setFormData({
         title: '',
         description: '',
@@ -75,7 +72,6 @@ export function ComplaintPage() {
       });
       setErrors({});
       
-      // Hide success message after 5 seconds
       setTimeout(() => {
         setShowSuccess(false);
       }, 5000);
