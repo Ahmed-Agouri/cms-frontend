@@ -7,7 +7,6 @@ import {
   Button,
   Paper,
   Stack,
-  TextInput,
   Textarea,
   Select,
   Loader,
@@ -18,7 +17,7 @@ import {
 } from '@mantine/core';
 import { IconArrowLeft } from '@tabler/icons-react';
 import { RatingModal } from './RatingModal';
-import { getComplaintById } from '../api/complaintsApi';
+import { getComplaintById, updateResolution } from '../api/complaintsApi';
 import classes from './ComplaintDetailPage.module.css';
 
 function getStatusColor(status) {
@@ -48,9 +47,11 @@ export function ComplaintDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
+  const auth = JSON.parse(localStorage.getItem('auth') || '{}');
+  const user = auth.user;
+
 
   const isAgent =
-    location.pathname.includes('/agent') ||
     new URLSearchParams(location.search).get('agent') === 'true';
 
   const [complaint, setComplaint] = useState(null);
@@ -79,7 +80,7 @@ export function ComplaintDetailPage() {
         setResolutionNotes(data.resolutionNotes ?? '');
         setStatus(data.status);
       }
-    } catch (err) {
+    } catch {
       setError('Failed to load complaint');
     } finally {
       setLoading(false);
@@ -93,11 +94,12 @@ export function ComplaintDetailPage() {
     try {
       await updateResolution(id, {
         resolutionNotes,
+        assignedTo: user.name,
         status,
       });
 
       await loadComplaint();
-    } catch (err) {
+    } catch {
       setError('Failed to save changes');
     } finally {
       setSaving(false);
@@ -123,7 +125,7 @@ export function ComplaintDetailPage() {
     );
   }
 
-  const hasResolution = !!complaint.resolutionNotes;
+  const hasResolution = Boolean(complaint.resolutionNotes);
   const isResolved = complaint.status === 'Resolved';
 
   return (
@@ -136,7 +138,9 @@ export function ComplaintDetailPage() {
         >
           Back
         </Button>
+
         <Title order={2}>{complaint.title}</Title>
+
         <Badge color={getStatusColor(complaint.status)}>
           {complaint.status}
         </Badge>
@@ -165,19 +169,23 @@ export function ComplaintDetailPage() {
 
       <Paper p="lg" withBorder>
         <Stack gap="sm">
-          <Text><strong>Created:</strong> {formatDate(complaint.createdAt)}</Text>
-          <Text><strong>Last Updated:</strong> {formatDate(complaint.updatedAt)}</Text>
+          <Text>
+            <strong>Created:</strong> {formatDate(complaint.createdAt)}
+          </Text>
+          <Text>
+            <strong>Last Updated:</strong> {formatDate(complaint.updatedAt)}
+          </Text>
 
           {isAgent && (
             <Select
               label="Status"
+              value={status}
+              onChange={setStatus}
               data={[
                 { value: 'Open', label: 'Open' },
                 { value: 'InProgress', label: 'In Progress' },
                 { value: 'Resolved', label: 'Resolved' },
               ]}
-              value={status}
-              onChange={setStatus}
             />
           )}
         </Stack>
@@ -189,7 +197,8 @@ export function ComplaintDetailPage() {
             Save Changes
           </Button>
         ) : (
-          hasResolution && !isResolved && (
+          hasResolution &&
+          !isResolved && (
             <Button color="green" onClick={() => setRatingModalOpen(true)}>
               Confirm Resolution
             </Button>

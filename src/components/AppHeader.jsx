@@ -20,7 +20,7 @@ export function AppHeader() {
           { label: 'Submit Complaint', icon: IconPlus, path: '/complaints/create' },
         ];
 
-      case 'Resolution Agent':
+      case 'SupportPerson':
         return [
           { label: 'Dashboard', icon: IconHome, path: '/dashboard' },
           { label: 'Resolve Complaint', icon: IconPlus, path: '/complaints/resolve' },

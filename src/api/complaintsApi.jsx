@@ -19,3 +19,27 @@ export async function updateComplaint(id, payload) {
   const res = await httpClient.put(`/api/complaints/${id}`, payload);
   return res.data.data;
 }
+
+export async function getComplaintsForAgent(params) {
+  const res = await httpClient.get('/api/complaints', {params,});
+
+  return res.data.data;
+}
+
+export async function addResolution(complaintId, payload) {
+  const res = await httpClient.post(
+    `/api/resolution/${complaintId}`,
+    payload
+  );
+
+  return res.data.data; 
+}
+
+export async function updateResolution(complaintId, payload) {
+  const res = await httpClient.put(
+    `/api/resolution/${complaintId}`,
+    payload
+  );
+
+  return res.data.data;
+}

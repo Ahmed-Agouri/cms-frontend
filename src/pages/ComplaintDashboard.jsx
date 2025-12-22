@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Container,
@@ -12,355 +12,197 @@ import {
   Loader,
   Center,
 } from '@mantine/core';
-import { IconSearch, IconPlus, IconCheck } from '@tabler/icons-react';
+import { IconSearch, IconCheck } from '@tabler/icons-react';
 import { useDebouncedValue } from '@mantine/hooks';
 import classes from './ComplaintDashboard.module.css';
+import { getComplaintsForAgent } from '../api/complaintsApi';
 
-
-async function fetchComplaints(page = 1, search = '', status = '', category = '', priority = '') {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const filtered = mockData.filter((complaint) => {
-        const matchesSearch =
-          !search ||
-          complaint.reference.toLowerCase().includes(search.toLowerCase()) ||
-          complaint.title.toLowerCase().includes(search.toLowerCase());
-        const matchesStatus = !status || complaint.status === status;
-        const matchesCategory = !category || complaint.category === category;
-        const matchesPriority = !priority || complaint.priority === priority;
-        return matchesSearch && matchesStatus && matchesCategory && matchesPriority;
-      });
-
-      const pageSize = 10;
-      const startIndex = (page - 1) * pageSize;
-      const endIndex = startIndex + pageSize;
-      const paginated = filtered.slice(startIndex, endIndex);
-      const totalPages = Math.ceil(filtered.length / pageSize);
-
-      resolve({
-        data: paginated,
-        pagination: {
-          page,
-          pageSize,
-          total: filtered.length,
-          totalPages,
-        },
-      });
-    }, 500);
-  });
-}
-
-function formatRelativeTime(dateString) {
-  const date = new Date(dateString);
-  const now = new Date();
-  const diffMs = now - date;
-  const diffMins = Math.floor(diffMs / 60000);
-  const diffHours = Math.floor(diffMs / 3600000);
-  const diffDays = Math.floor(diffMs / 86400000);
-
-  if (diffMins < 60) {
-    return `${diffMins} ${diffMins === 1 ? 'min' : 'mins'} ago`;
-  } else if (diffHours < 24) {
-    return `${diffHours} ${diffHours === 1 ? 'hour' : 'hours'} ago`;
-  } else if (diffDays === 1) {
-    return '1 Day ago';
-  } else {
-    return `${diffDays} Days ago`;
-  }
-}
-
-function getStatusColor(status) {
-  switch (status) {
-    case 'In Progress':
-      return '#F59E0B';
-    case 'Resolved':
-      return '#10B981';
-    case 'Unresolved':
-      return '#EF4444';
-    default:
-      return '#6B7280';
-  }
-}
+const PAGE_SIZE = 10;
 
 export function ComplaintDashboard() {
   const navigate = useNavigate();
-  const [complaints, setComplaints] = useState([]);
+  
+
+  const [allComplaints, setAllComplaints] = useState([]);
   const [loading, setLoading] = useState(true);
+
   const [searchValue, setSearchValue] = useState('');
   const [debouncedSearch] = useDebouncedValue(searchValue, 300);
+
   const [statusFilter, setStatusFilter] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
   const [priorityFilter, setPriorityFilter] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pagination, setPagination] = useState({
-    page: 1,
-    pageSize: 10,
-    total: 0,
-    totalPages: 1,
-  });
 
-  const loadComplaints = useCallback(async () => {
-    setLoading(true);
-    try {
-      const response = await fetchComplaints(
-        currentPage,
-        debouncedSearch,
-        statusFilter,
-        categoryFilter,
-        priorityFilter
-      );
-      setComplaints(response.data);
-      setPagination(response.pagination);
-    } catch (error) {
-    } finally {
-      setLoading(false);
-    }
-  }, [currentPage, debouncedSearch, statusFilter, categoryFilter, priorityFilter]);
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
-    loadComplaints();
-  }, [loadComplaints]);
+    async function load() {
+      setLoading(true);
+      try {
+        const data = await getComplaintsForAgent();
+        setAllComplaints(Array.isArray(data) ? data : []);
+      } catch (err) {
+        setAllComplaints([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    load();
+  }, []);
+
+  const filteredComplaints = useMemo(() => {
+    return allComplaints.filter((c) => {
+      const matchesSearch =
+        !debouncedSearch ||
+        c.title.toLowerCase().includes(debouncedSearch.toLowerCase());
+
+      const matchesStatus = !statusFilter || c.status === statusFilter;
+      const matchesCategory = !categoryFilter || c.category === categoryFilter;
+      const matchesPriority = !priorityFilter || c.priority === priorityFilter;
+
+      return (
+        matchesSearch &&
+        matchesStatus &&
+        matchesCategory &&
+        matchesPriority
+      );
+    });
+  }, [
+    allComplaints,
+    debouncedSearch,
+    statusFilter,
+    categoryFilter,
+    priorityFilter,
+  ]);
+
+  const totalPages = Math.ceil(filteredComplaints.length / PAGE_SIZE);
+  const pagedComplaints = filteredComplaints.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE
+  );
 
   useEffect(() => {
     setCurrentPage(1);
   }, [debouncedSearch, statusFilter, categoryFilter, priorityFilter]);
 
-  const handleViewComplaint = (complaintId) => {
-    navigate(`/complaints/${complaintId}?agent=true`);
-  };
-
-  const handleResolveComplaint = () => {
-    navigate('/complaints/resolve');
-  };
-
-  const rows = complaints.map((complaint) => (
-    <Table.Tr key={complaint.id} className={classes.tableRow}>
-      <Table.Td>
-        <Text fw={700} className={classes.reference}>
-          {complaint.reference}
-        </Text>
-      </Table.Td>
-      <Table.Td>
-        <Text className={classes.title}>{complaint.title}</Text>
-      </Table.Td>
-      <Table.Td>
-        <Group gap={4}>
-          {complaint.status === 'Resolved' && (
-            <IconCheck size={16} style={{ color: getStatusColor(complaint.status) }} />
-          )}
-          <Text
-            style={{ color: getStatusColor(complaint.status) }}
-            className={classes.status}
-          >
-            {complaint.status}
-          </Text>
-        </Group>
-      </Table.Td>
-      <Table.Td>
-        <Text className={classes.category}>{complaint.category}</Text>
-      </Table.Td>
-      <Table.Td>
-        <Text className={classes.priority}>{complaint.priority}</Text>
-      </Table.Td>
-      <Table.Td>
-        <Text className={classes.lastUpdated}>
-          {formatRelativeTime(complaint.updatedAt)}
-        </Text>
-      </Table.Td>
-      <Table.Td>
-        <Text
-          className={classes.viewLink}
-          onClick={() => handleViewComplaint(complaint.id)}
-        >
-          View Complaint
-        </Text>
-      </Table.Td>
-    </Table.Tr>
-  ));
-
-  const getPaginationItems = () => {
-    const items = [];
-    const totalPages = pagination.totalPages;
-    const current = pagination.page;
-
-    if (totalPages <= 7) {
-      for (let i = 1; i <= totalPages; i++) {
-        items.push(i);
-      }
-    } else {
-      items.push(1);
-
-      if (current > 3) {
-        items.push('ellipsis-start');
-      }
-
-      const start = Math.max(2, current - 1);
-      const end = Math.min(totalPages - 1, current + 1);
-
-      for (let i = start; i <= end; i++) {
-        items.push(i);
-      }
-
-      if (current < totalPages - 2) {
-        items.push('ellipsis-end');
-      }
-      items.push(totalPages);
-    }
-
-    return items;
+  const handleViewComplaint = (id) => {
+    navigate(`/complaints/${id}?agent=true`);
   };
 
   return (
     <Container size="xl" className={classes.container}>
-      <div className={classes.header}>
-        <Title order={1} className={classes.pageTitle}>
-          Complaint Dashboard
-        </Title>
-      </div>
+      <Title order={1}>Complaint Dashboard</Title>
 
-      <div className={classes.controls}>
-        <Group className={classes.searchGroup}>
-          <TextInput
-            placeholder="Search Complaint"
-            leftSection={<IconSearch size={18} />}
-            value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
-            className={classes.searchInput}
-          />
-        </Group>
-        <Button
-          leftSection={<IconPlus size={18} />}
-          color="green"
-          onClick={handleResolveComplaint}
-          className={classes.resolveButton}
-        >
-          Resolve Complaint
-        </Button>
-      </div>
+      <TextInput
+        placeholder="Search complaints"
+        leftSection={<IconSearch size={18} />}
+        value={searchValue}
+        onChange={(e) => setSearchValue(e.target.value)}
+        mb="md"
+      />
 
-      <div className={classes.filtersRow}>
+      <Group mb="md">
         <Select
-          placeholder="Category ↓"
+          placeholder="Status"
+          value={statusFilter}
+          onChange={setStatusFilter}
+          clearable
+          data={[
+            { value: 'Open', label: 'Open' },
+            { value: 'InProgress', label: 'In Progress' },
+            { value: 'Resolved', label: 'Resolved' },
+          ]}
+        />
+
+        <Select
+          placeholder="Category"
+          value={categoryFilter}
+          onChange={setCategoryFilter}
+          clearable
           data={[
             { value: 'BillingOrPayments', label: 'Billing / Payments' },
             { value: 'ServiceQuality', label: 'Service Quality' },
             { value: 'TechnicalIssue', label: 'Technical Issue' },
-            { value: 'AccountOrAccess', label: 'Account / Access' },
-            { value: 'ProductOrService', label: 'Product / Service' },
-            { value: 'EmployeeConduct', label: 'Employee Conduct' },
-            { value: 'DataPrivacyOrSecurity', label: 'Data Privacy / Security' },
-            { value: 'Other', label: 'Other' },
           ]}
-          value={categoryFilter}
-          onChange={setCategoryFilter}
-          className={classes.filterSelect}
-          clearable
         />
+
         <Select
-          placeholder="Priority ↓"
+          placeholder="Priority"
+          value={priorityFilter}
+          onChange={setPriorityFilter}
+          clearable
           data={[
-            { value: '', label: 'All' },
             { value: 'High', label: 'High' },
             { value: 'Medium', label: 'Medium' },
             { value: 'Low', label: 'Low' },
           ]}
-          value={priorityFilter}
-          onChange={setPriorityFilter}
-          className={classes.filterSelect}
-          clearable
         />
-        <Select
-          placeholder="Status ↓"
-          data={[
-            { value: '', label: 'All' },
-            { value: 'In Progress', label: 'In Progress' },
-            { value: 'Resolved', label: 'Resolved' },
-            { value: 'Unresolved', label: 'Unresolved' },
-          ]}
-          value={statusFilter}
-          onChange={setStatusFilter}
-          className={classes.filterSelect}
-          clearable
-        />
-      </div>
+      </Group>
 
       {loading ? (
         <Center py="xl">
-          <Loader size="lg" />
+          <Loader />
         </Center>
-      ) : complaints.length === 0 ? (
+      ) : pagedComplaints.length === 0 ? (
         <Center py="xl">
-          <Text c="dimmed" size="lg">
-            No complaints found
-          </Text>
+          <Text c="dimmed">No complaints found</Text>
         </Center>
       ) : (
         <>
-          <div className={classes.tableWrapper}>
-            <Table className={classes.table}>
-              <Table.Thead>
-                <Table.Tr className={classes.tableHeader}>
-                  <Table.Th>ID</Table.Th>
-                  <Table.Th>Title</Table.Th>
-                  <Table.Th>Status</Table.Th>
-                  <Table.Th>Category</Table.Th>
-                  <Table.Th>Priority</Table.Th>
-                  <Table.Th>Last Updated</Table.Th>
-                  <Table.Th>Action</Table.Th>
-                </Table.Tr>
-              </Table.Thead>
-              <Table.Tbody>{rows}</Table.Tbody>
-            </Table>
-          </div>
+          <Table striped highlightOnHover>
+            <Table.Thead>
+              <Table.Tr>
+                <Table.Th>Title</Table.Th>
+                <Table.Th>Status</Table.Th>
+                <Table.Th>Category</Table.Th>
+                <Table.Th>Priority</Table.Th>
+                <Table.Th />
+              </Table.Tr>
+            </Table.Thead>
 
-          {pagination.totalPages > 1 && (
-            <div className={classes.paginationWrapper}>
-              <Group gap="xs">
-                <Button
-                  variant="outline"
-                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                  disabled={currentPage === 1}
-                  size="sm"
-                >
-                  Previous
-                </Button>
-
-                {getPaginationItems().map((item, index) => {
-                  if (item === 'ellipsis-start' || item === 'ellipsis-end') {
-                    return (
-                      <Text key={`ellipsis-${index}`} className={classes.ellipsis}>
-                        ...
-                      </Text>
-                    );
-                  }
-                  return (
+            <Table.Tbody>
+              {pagedComplaints.map((c) => (
+                <Table.Tr key={c.id}>
+                  <Table.Td>{c.title}</Table.Td>
+                  <Table.Td>
+                    <Group gap={4}>
+                      {c.status === 'Resolved' && <IconCheck size={14} />}
+                      <Text>{c.status}</Text>
+                    </Group>
+                  </Table.Td>
+                  <Table.Td>{c.category}</Table.Td>
+                  <Table.Td>{c.priority}</Table.Td>
+                  <Table.Td>
                     <Button
-                      key={item}
-                      variant={item === currentPage ? 'filled' : 'outline'}
-                      onClick={() => setCurrentPage(item)}
-                      size="sm"
-                      className={
-                        item === currentPage ? classes.activePage : ''
-                      }
+                      variant="subtle"
+                      onClick={() => handleViewComplaint(c.id)}
                     >
-                      {item}
+                      View
                     </Button>
-                  );
-                })}
+                  </Table.Td>
+                </Table.Tr>
+              ))}
+            </Table.Tbody>
+          </Table>
 
-                <Button
-                  variant="outline"
-                  onClick={() =>
-                    setCurrentPage((p) => Math.min(pagination.totalPages, p + 1))
-                  }
-                  disabled={currentPage === pagination.totalPages}
-                  size="sm"
-                >
-                  Next
-                </Button>
-              </Group>
-            </div>
-          )}
+          <Group justify="center" mt="md">
+            <Button
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage((p) => p - 1)}
+            >
+              Previous
+            </Button>
+            <Text>
+              Page {currentPage} of {totalPages}
+            </Text>
+            <Button
+              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage((p) => p + 1)}
+            >
+              Next
+            </Button>
+          </Group>
         </>
       )}
     </Container>

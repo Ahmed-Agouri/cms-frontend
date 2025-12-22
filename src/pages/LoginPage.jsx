@@ -38,7 +38,7 @@ export function LoginPage() {
           case 'Consumer':
             navigate('/complaints/my');
             break;
-          case 'Resolution Agent':
+          case 'SupportPerson':
           case 'TenantAdmin':
             navigate('/dashboard');
             break;
