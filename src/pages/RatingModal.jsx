@@ -23,13 +23,10 @@ export function RatingModal({ opened, onClose, onSubmit, loading }) {
   const handleSubmit = async () => {
     try {
       await onSubmit(rating, feedback);
-      // needs fixing later
       setRating(0);
       setFeedback('');
       setHoveredRating(0);
     } catch (error) {
-      // Don't reset on error - let user retry
-      console.error('Failed to submit rating:', error);
     }
   };
 

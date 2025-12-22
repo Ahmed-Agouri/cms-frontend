@@ -58,9 +58,7 @@ export function ComplaintPage() {
     setIsSubmitting(true);
     setShowSuccess(false);
 
-    setTimeout(() => {
-      console.log('Complaint submitted:', formData);
-      
+    setTimeout(() => {      
       setIsSubmitting(false);
       setShowSuccess(true);
       
@@ -117,9 +115,13 @@ export function ComplaintPage() {
                 placeholder="Select a category"
                 required
                 data={[
-                  { value: 'Billing', label: 'Billing' },
-                  { value: 'Service', label: 'Service' },
-                  { value: 'Technical', label: 'Technical' },
+                  { value: 'BillingOrPayments', label: 'Billing / Payments' },
+                  { value: 'ServiceQuality', label: 'Service Quality' },
+                  { value: 'TechnicalIssue', label: 'Technical Issue' },
+                  { value: 'AccountOrAccess', label: 'Account / Access' },
+                  { value: 'ProductOrService', label: 'Product / Service' },
+                  { value: 'EmployeeConduct', label: 'Employee Conduct' },
+                  { value: 'DataPrivacyOrSecurity', label: 'Data Privacy / Security' },
                   { value: 'Other', label: 'Other' },
                 ]}
                 value={formData.category}
@@ -154,7 +156,7 @@ export function ComplaintPage() {
 
               {showSuccess && (
                 <Text c="green" size="sm" style={{ textAlign: 'center', marginTop: '0.5rem' }}>
-                  Complaint submitted successfully! Check the console for details.
+                  Complaint submitted successfully!
                 </Text>
               )}
             </Stack>

@@ -1,0 +1,106 @@
+.tableWrapper {
+  overflow-x: auto;
+  margin-bottom: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  background-color: #ffffff;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tableHeader {
+  background-color: #9CA3AF;
+}
+
+.tableHeader th {
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: #ffffff;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.tableRow {
+  background-color: #ffffff;
+  transition: background-color 0.2s ease;
+}
+
+.tableRow:hover {
+  background-color: #f9fafb;
+}
+
+.tableRow td {
+  padding: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 0.875rem;
+}
+
+.timestamp {
+  color: #111827;
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+.user {
+  color: #111827;
+  font-size: 0.875rem;
+}
+
+.role {
+  color: #111827;
+  font-size: 0.875rem;
+}
+
+.action {
+  color: #111827;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.details {
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.paginationWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 2rem;
+  padding: 1rem 0;
+}
+
+.ellipsis {
+  padding: 0 0.5rem;
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.activePage {
+  background-color: #2563eb;
+  color: #ffffff;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .tableWrapper {
+    overflow-x: scroll;
+  }
+
+  .tableHeader th,
+  .tableRow td {
+    padding: 0.75rem 0.5rem;
+    font-size: 0.75rem;
+  }
+
+  .paginationWrapper {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+}
+

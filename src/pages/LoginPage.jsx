@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
 import {
   Box,
   Container,
@@ -20,20 +21,46 @@ export function LoginPage() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const { login } = useAuth();
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    // need to replace with actual authentication logic later from my auth service
-    navigate('/dashboard');
-  };
+    const handleSubmit = async (event) => {
+      event.preventDefault();
+      setError(null);
+      setLoading(true);
+    
+      try {
+
+        const user = await login(email, password);
+        const userRole = user.role
+        switch (userRole) {
+          case 'Consumer':
+            navigate('/complaints/my');
+            break;
+          case 'Resolution Agent':
+          case 'TenantAdmin':
+            navigate('/dashboard');
+            break;
+          case 'Admin':
+            navigate('/admin/dashboard');
+            break;
+          default:
+            navigate('/');
+        }
+      } catch (err) {
+        setError('Invalid email or password');
+      } finally {
+        setLoading(false);
+      }
+    };
+    
 
   const handleSignInTop = () => {
     navigate('/login');
   };
 
   const handleRegister = () => {
-    // need to replace with actual register flow later
-    console.log('Register clicked');
   };
 
   return (

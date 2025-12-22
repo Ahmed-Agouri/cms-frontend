@@ -16,82 +16,8 @@ import { IconSearch, IconPlus, IconCheck } from '@tabler/icons-react';
 import { useDebouncedValue } from '@mantine/hooks';
 import classes from './ComplaintDashboard.module.css';
 
-const mockData = [
-  {
-    id: 1,
-    reference: '#Ref-1011',
-    title: 'Incorrect Direct Debit Charge',
-    status: 'In Progress',
-    category: 'Banking',
-    priority: 'High',
-    updatedAt: new Date(Date.now() - 1 * 24 * 1000).toISOString(),
-  },
-  {
-    id: 2,
-    reference: '#Ref-1012',
-    title: 'Unable to Access Online Banking',
-    status: 'In Progress',
-    category: 'Banking',
-    priority: 'Low',
-    updatedAt: new Date(Date.now() - 1 * 24 * 1000).toISOString(),
-  },
-  {
-    id: 3,
-    reference: '#Ref-1013',
-    title: 'ATM Dispensed Incorrect Amount',
-    status: 'In Progress',
-    category: 'Banking',
-    priority: 'Low',
-    updatedAt: new Date(Date.now() - 1 * 24 * 1000).toISOString(),
-  },
-  {
-    id: 4,
-    reference: '#Ref-1014',
-    title: 'Bank app keeps crashing',
-    status: 'Unresolved',
-    category: 'Banking',
-    priority: 'High',
-    updatedAt: new Date(Date.now() - 1 * 24 * 1000).toISOString(),
-  },
-  {
-    id: 5,
-    reference: '#Ref-1015',
-    title: 'Lost access to banking app',
-    status: 'Unresolved',
-    category: 'Banking',
-    priority: 'Medium',
-    updatedAt: new Date(Date.now() - 1 * 24 * 1000).toISOString(),
-  },
-  {
-    id: 6,
-    reference: '#Ref-1016',
-    title: 'banking App not working',
-    status: 'In Progress',
-    category: 'Banking',
-    priority: 'High',
-    updatedAt: new Date(Date.now() - 1 * 24 * 1000).toISOString(),
-  },
-  {
-    id: 7,
-    reference: '#Ref-1017',
-    title: 'Lost £300',
-    status: 'Unresolved',
-    category: 'Banking',
-    priority: 'High',
-    updatedAt: new Date(Date.now() - 1 * 24 * 1000).toISOString(),  },
-  {
-    id: 8,
-    reference: '#Ref-1018',
-    title: 'Extra benefits not added',
-    status: 'In Progress',
-    category: 'Banking',
-    priority: 'High',
-    updatedAt: new Date(Date.now() - 1 * 24 * 1000).toISOString(),
-  },
-];
 
 async function fetchComplaints(page = 1, search = '', status = '', category = '', priority = '') {
-  //need to replace with actual API endpoint later
   return new Promise((resolve) => {
     setTimeout(() => {
       const filtered = mockData.filter((complaint) => {
@@ -186,7 +112,6 @@ export function ComplaintDashboard() {
       setComplaints(response.data);
       setPagination(response.pagination);
     } catch (error) {
-      console.error('Failed to load complaints:', error);
     } finally {
       setLoading(false);
     }
@@ -317,11 +242,13 @@ export function ComplaintDashboard() {
         <Select
           placeholder="Category ↓"
           data={[
-            { value: '', label: 'All' },
-            { value: 'Banking', label: 'Banking' },
-            { value: 'Technical', label: 'Technical' },
-            { value: 'Billing', label: 'Billing' },
-            { value: 'Account', label: 'Account' },
+            { value: 'BillingOrPayments', label: 'Billing / Payments' },
+            { value: 'ServiceQuality', label: 'Service Quality' },
+            { value: 'TechnicalIssue', label: 'Technical Issue' },
+            { value: 'AccountOrAccess', label: 'Account / Access' },
+            { value: 'ProductOrService', label: 'Product / Service' },
+            { value: 'EmployeeConduct', label: 'Employee Conduct' },
+            { value: 'DataPrivacyOrSecurity', label: 'Data Privacy / Security' },
             { value: 'Other', label: 'Other' },
           ]}
           value={categoryFilter}

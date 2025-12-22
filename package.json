@@ -10,16 +10,18 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@mantine/core": "^7.5.0",
+    "@mantine/form": "^7.5.0",
+    "@mantine/hooks": "^7.5.0",
+    "@tabler/icons-react": "^3.3.0",
+    "axios": "^1.13.2",
+    "clsx": "^2.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "@mantine/core": "^7.5.0",
-    "@mantine/hooks": "^7.5.0",
-    "@mantine/form": "^7.5.0",
-    "@tabler/icons-react": "^3.3.0",
-    "clsx": "^2.1.0",
     "react-router-dom": "^6.21.0"
   },
   "devDependencies": {
+    "@types/axios": "^0.9.36",
     "@types/react": "^18.2.43",
     "@types/react-dom": "^18.2.17",
     "@vitejs/plugin-react": "^4.2.1",

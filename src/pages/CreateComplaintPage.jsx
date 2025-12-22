@@ -12,21 +12,7 @@ import {
   Text,
   Alert,
 } from '@mantine/core';
-
-
-async function submitComplaintToApi(payload) {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      console.log('API Call - Complaint Data:', payload);
-      resolve({
-        success: true,
-        id: `COMP-${Date.now()}`,
-        message: 'Complaint created successfully',
-      });
-    }, 1000);
-  });
-}
-
+import { createComplaint } from '../api/complaintsApi';
 
 export function CreateComplaintPage() {
   const navigate = useNavigate();
@@ -45,19 +31,23 @@ export function CreateComplaintPage() {
   const [apiError, setApiError] = useState('');
 
   useEffect(() => {
-    if (showSuccess) {
-      const timer = setTimeout(() => {
-        setShowSuccess(false);
-      }, 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [showSuccess]);
+    if (!showSuccess) return;
+
+    const timer = setTimeout(() => {
+      setShowSuccess(false);
+      navigate('/complaints/my');
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, [showSuccess, navigate]);
 
   const handleChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: '' }));
     }
+
     if (apiError) {
       setApiError('');
     }
@@ -84,25 +74,21 @@ export function CreateComplaintPage() {
 
     setErrors(newErrors);
 
-    if (newErrors.title && titleInputRef.current) {
-      titleInputRef.current.focus();
-    } else if (newErrors.description && descriptionInputRef.current) {
-      descriptionInputRef.current.focus();
+    if (newErrors.title) {
+      titleInputRef.current?.focus();
+    } else if (newErrors.description) {
+      descriptionInputRef.current?.focus();
     }
 
     return Object.keys(newErrors).length === 0;
   };
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!validate()) {
-      return;
-    }
+    if (!validate()) return;
 
     setIsSubmitting(true);
-    setShowSuccess(false);
     setApiError('');
 
     try {
@@ -112,25 +98,15 @@ export function CreateComplaintPage() {
         description: formData.description.trim(),
       };
 
-      const response = await submitComplaintToApi(payload);
+      await createComplaint(payload);
 
-      if (response.success) {
-        setShowSuccess(true);
-
-        setFormData({
-          category: '',
-          title: '',
-          description: '',
-        });
-        setErrors({});
-
-      } else {
-        setApiError(response.message || 'Failed to create complaint. Please try again.');
-      }
+      setShowSuccess(true);
+      setFormData({ category: '', title: '', description: '' });
+      setErrors({});
     } catch (error) {
-      console.error('Failed to submit complaint:', error);
       setApiError(
-        error.message || 'Network error. Please check your connection and try again.'
+        error?.response?.data?.message ||
+        'Failed to create complaint. Please try again.'
       );
     } finally {
       setIsSubmitting(false);
@@ -138,121 +114,91 @@ export function CreateComplaintPage() {
   };
 
   const handleCancel = () => {
-    setFormData({
-      category: '',
-      title: '',
-      description: '',
-    });
-    setErrors({});
-    setApiError('');
-    setShowSuccess(false);
     navigate(-1);
   };
 
   return (
-    <Container size="lg" style={{ paddingTop: '2rem', paddingBottom: '2rem' }}>
+    <Container size="lg" py="xl">
       <Stack gap="xl">
         <div>
-          <Title order={1} c="blue" style={{ marginBottom: '0.5rem' }}>
-            Create a Complaint
-          </Title>
-          <Text c="dimmed" size="md">
-            Fill in the details below to create a new complaint.
+          <Title order={1}>Create a Complaint</Title>
+          <Text c="dimmed">
+            Fill in the details below to submit your complaint.
           </Text>
         </div>
 
-        <Paper
-          shadow="sm"
-          p="xl"
-          radius="md"
-          withBorder
-          style={{
-            backgroundColor: '#f8f9fa',
-            borderColor: '#dee2e6',
-            width: '100%',
-          }}
-        >
+        <Paper withBorder p="xl" radius="md">
           <form onSubmit={handleSubmit}>
             <Stack gap="lg">
               {apiError && (
-                <Alert color="red" title="Error" onClose={() => setApiError('')} withCloseButton>
+                <Alert color="red" title="Error">
                   {apiError}
                 </Alert>
               )}
 
               {showSuccess && (
-                <Alert color="green" title="Success" onClose={() => setShowSuccess(false)} withCloseButton>
+                <Alert color="green" title="Success">
                   Complaint created successfully!
                 </Alert>
               )}
 
               <Select
                 label="Category"
-                placeholder="Choose a Category"
+                placeholder="Choose a category"
                 required
                 data={[
-                  { value: 'Billing', label: 'Billing' },
-                  { value: 'Service', label: 'Service' },
-                  { value: 'Technical', label: 'Technical' },
+                  { value: 'BillingOrPayments', label: 'Billing / Payments' },
+                  { value: 'ServiceQuality', label: 'Service Quality' },
+                  { value: 'TechnicalIssue', label: 'Technical Issue' },
+                  { value: 'AccountOrAccess', label: 'Account / Access' },
+                  { value: 'ProductOrService', label: 'Product / Service' },
+                  { value: 'EmployeeConduct', label: 'Employee Conduct' },
+                  { value: 'DataPrivacyOrSecurity', label: 'Data Privacy / Security' },
                   { value: 'Other', label: 'Other' },
                 ]}
                 value={formData.category}
-                onChange={(value) => handleChange('category', value)}
+                onChange={(v) => handleChange('category', v)}
                 error={errors.category}
-                aria-label="Select complaint category"
               />
 
               <TextInput
                 ref={titleInputRef}
                 label="Title"
-                placeholder="Enter a short summary of your problem..."
                 required
                 value={formData.title}
                 onChange={(e) => handleChange('title', e.target.value)}
                 error={errors.title}
-                aria-label="Enter complaint title"
               />
 
               <Textarea
                 ref={descriptionInputRef}
                 label="Description"
-                placeholder="Provide a detailed description of the issue..."
                 required
                 minRows={6}
                 value={formData.description}
                 onChange={(e) => handleChange('description', e.target.value)}
                 error={errors.description}
-                aria-label="Enter complaint description"
               />
 
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'flex-end',
-                  gap: '1rem',
-                  marginTop: '1rem',
-                }}
-              >
-                <Button
-                  type="button"
-                  variant="outline"
-                  color="red"
-                  onClick={handleCancel}
-                  disabled={isSubmitting}
-                  size="md"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  color="green"
-                  loading={isSubmitting}
-                  disabled={isSubmitting}
-                  size="md"
-                >
-                  {isSubmitting ? 'Submitting...' : 'Submit'}
-                </Button>
-              </div>
+              <Stack align="flex-end">
+                <Button.Group>
+                  <Button
+                    variant="outline"
+                    color="red"
+                    onClick={handleCancel}
+                    disabled={isSubmitting}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    color="green"
+                    loading={isSubmitting}
+                  >
+                    Submit
+                  </Button>
+                </Button.Group>
+              </Stack>
             </Stack>
           </form>
         </Paper>

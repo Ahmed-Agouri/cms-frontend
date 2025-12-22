@@ -1,18 +1,11 @@
-import { useNavigate } from 'react-router-dom';
+import { Group, Button, Text, Image, Container, Box, Stack } from '@mantine/core';
 import { IconHome, IconPlus } from '@tabler/icons-react';
-import {
-  Group,
-  Image,
-  Button,
-  Text,
-  Container,
-  Box,
-} from '@mantine/core';
-import cmsLogo from '../assets/images/cms-logo.svg?url';
-import classes from './HeaderTabs.module.css';
+import { useNavigate } from 'react-router-dom';
+import cmsLogo from '../../assets/images/cms-logo.svg?url';
+import classes from './Header.module.css';
 
 
-export function HeaderTabs() {
+export function ResolverHeader() {
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -56,31 +49,33 @@ export function HeaderTabs() {
               CMS
             </Text>
           </Group>
-      
+
           <Group gap="lg">
             <Button
               variant="subtle"
-              leftSection={<IconHome size={20} />}
               onClick={() => navigate('/dashboard')}
               size="md"
+              style={{ padding: '0.5rem 1rem' }}
             >
-              Dashboard
+              <Stack gap={2} align="center">
+                <IconHome size={20} />
+                <Text size="sm">Dashboard</Text>
+              </Stack>
             </Button>
 
             <Button
               variant="subtle"
-              leftSection={<IconPlus size={20} />}
-              onClick={() => navigate('/complaints/create')}
+              onClick={() => navigate('/complaints/resolve')}
               size="md"
+              style={{ padding: '0.5rem 1rem' }}
             >
-              Submit Complaint
+              <Stack gap={2} align="center">
+                <IconPlus size={20} />
+                <Text size="sm">Resolve Complaint</Text>
+              </Stack>
             </Button>
 
-            <Button
-              variant="subtle"
-              onClick={handleLogout}
-              size="md"
-            >
+            <Button variant="subtle" onClick={handleLogout} size="md">
               Log out
             </Button>
           </Group>
@@ -89,3 +84,4 @@ export function HeaderTabs() {
     </Box>
   );
 }
+

@@ -1,0 +1,48 @@
+.container {
+  padding-top: 6rem;
+  padding-bottom: 2rem;
+}
+
+.pageTitle {
+  color: #2563eb;
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0 0 2rem 0;
+}
+
+.controls {
+  margin-bottom: 1.5rem;
+}
+
+.searchGroup {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.searchInput {
+  flex: 1;
+  min-width: 250px;
+}
+
+.filterSelect {
+  min-width: 150px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .container {
+    padding-top: 5rem;
+  }
+
+  .searchGroup {
+    flex-direction: column;
+  }
+
+  .searchInput,
+  .filterSelect {
+    width: 100%;
+    min-width: auto;
+  }
+}
+
