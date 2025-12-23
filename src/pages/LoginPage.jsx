@@ -43,7 +43,7 @@ export function LoginPage() {
             navigate('/dashboard');
             break;
           case 'Admin':
-            navigate('/admin/dashboard');
+            navigate('/audit-logs');
             break;
           default:
             navigate('/');
