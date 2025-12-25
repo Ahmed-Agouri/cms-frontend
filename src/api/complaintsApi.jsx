@@ -43,3 +43,8 @@ export async function updateResolution(complaintId, payload) {
 
   return res.data.data;
 }
+
+export async function confirmResolution(id, payload) {
+  const res = await httpClient.post(`/api/resolution/${id}/confirm`, payload);
+  return res.data.data;
+}

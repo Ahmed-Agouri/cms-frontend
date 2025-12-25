@@ -16,8 +16,14 @@ import {
   Badge,
 } from '@mantine/core';
 import { IconArrowLeft } from '@tabler/icons-react';
-import { RatingModal } from './RatingModal';
-import { getComplaintById, updateResolution } from '../api/complaintsApi';
+
+import {
+  getComplaintById,
+  updateResolution,
+  confirmResolution,
+} from '../api/complaintsApi';
+
+import { RatingOverlay } from './RatingOverlay';
 import classes from './ComplaintDetailPage.module.css';
 
 function getStatusColor(status) {
@@ -47,12 +53,11 @@ export function ComplaintDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
+
   const auth = JSON.parse(localStorage.getItem('auth') || '{}');
-  const user = auth.user;
+  const user = auth?.user;
 
-
-  const isAgent =
-    new URLSearchParams(location.search).get('agent') === 'true';
+  const isAgent = new URLSearchParams(location.search).get('agent') === 'true';
 
   const [complaint, setComplaint] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -62,7 +67,8 @@ export function ComplaintDetailPage() {
   const [status, setStatus] = useState('');
   const [saving, setSaving] = useState(false);
 
-  const [ratingModalOpen, setRatingModalOpen] = useState(false);
+  const [ratingOpen, setRatingOpen] = useState(false);
+  const [confirming, setConfirming] = useState(false);
 
   useEffect(() => {
     loadComplaint();
@@ -94,7 +100,7 @@ export function ComplaintDetailPage() {
     try {
       await updateResolution(id, {
         resolutionNotes,
-        assignedTo: user.name,
+        assignedTo: user?.name,
         status,
       });
 
@@ -103,6 +109,19 @@ export function ComplaintDetailPage() {
       setError('Failed to save changes');
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleConfirmResolution = async (rating, feedback) => {
+    setConfirming(true);
+
+    try {
+      await confirmResolution(id, { rating, feedback });
+      setRatingOpen(false);
+      await loadComplaint();
+    } catch (err) {
+    } finally {
+      setConfirming(false);
     }
   };
 
@@ -125,8 +144,11 @@ export function ComplaintDetailPage() {
     );
   }
 
-  const hasResolution = Boolean(complaint.resolutionNotes);
   const isResolved = complaint.status === 'Resolved';
+  const isClosed = complaint.status === 'Closed';
+  const hasResolution = Boolean(complaint.resolutionNotes);
+
+  const canEdit = isAgent && !isClosed;
 
   return (
     <Container size="xl" className={classes.container}>
@@ -159,6 +181,7 @@ export function ComplaintDetailPage() {
             value={resolutionNotes}
             onChange={(e) => setResolutionNotes(e.target.value)}
             minRows={5}
+            disabled={!canEdit}
           />
         ) : hasResolution ? (
           <Text mt="sm">{complaint.resolutionNotes}</Text>
@@ -181,6 +204,7 @@ export function ComplaintDetailPage() {
               label="Status"
               value={status}
               onChange={setStatus}
+              disabled={!canEdit}  
               data={[
                 { value: 'Open', label: 'Open' },
                 { value: 'InProgress', label: 'In Progress' },
@@ -193,24 +217,30 @@ export function ComplaintDetailPage() {
 
       <Group mt="lg" justify="space-between">
         {isAgent ? (
-          <Button onClick={handleSaveChanges} loading={saving}>
+          <Button
+            onClick={handleSaveChanges}
+            loading={saving}
+            disabled={!canEdit}  
+          >
             Save Changes
           </Button>
         ) : (
-          hasResolution &&
-          !isResolved && (
-            <Button color="green" onClick={() => setRatingModalOpen(true)}>
+          isResolved &&
+          !isClosed && (
+            <Button color="green" onClick={() => setRatingOpen(true)}>
               Confirm Resolution
             </Button>
           )
         )}
       </Group>
 
-      <RatingModal
-        opened={ratingModalOpen}
-        onClose={() => setRatingModalOpen(false)}
-        onSubmit={() => setRatingModalOpen(false)}
-      />
+      {ratingOpen && (
+        <RatingOverlay
+          onClose={() => setRatingOpen(false)}
+          onSubmit={handleConfirmResolution}
+          loading={confirming}
+        />
+      )}
     </Container>
   );
 }

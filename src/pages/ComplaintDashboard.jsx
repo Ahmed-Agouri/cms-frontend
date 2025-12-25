@@ -16,6 +16,8 @@ import { IconSearch, IconCheck } from '@tabler/icons-react';
 import { useDebouncedValue } from '@mantine/hooks';
 import classes from './ComplaintDashboard.module.css';
 import { getComplaintsForAgent } from '../api/complaintsApi';
+import { confirmResolution } from '../api/complaintsApi';
+
 
 const PAGE_SIZE = 10;
 

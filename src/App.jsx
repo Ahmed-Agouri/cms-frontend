@@ -1,4 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
+import { MantineProvider } from '@mantine/core'
+import '@mantine/core/styles.css'
 import { ComplaintPage } from './pages/ComplaintPage'
 import { CreateComplaintPage } from './pages/CreateComplaintPage'
 import { MyComplaintsPage } from './pages/MyComplaintsPage'
@@ -18,7 +20,6 @@ function AppLayout() {
   return (
     <>
       {!isAuthRoute && <AppHeader />}
-
 
       <Routes>
         <Route path="/login" element={<LoginPage />} />
@@ -64,20 +65,20 @@ function AppLayout() {
         />
         <Route path="/" element={<Navigate to="/login" replace />} />
       </Routes>
-
     </>
   );
 }
 
 function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <AppLayout />
-      </BrowserRouter>
-    </AuthProvider>
+    <MantineProvider>
+      <AuthProvider>
+        <BrowserRouter>
+          <AppLayout />
+        </BrowserRouter>
+      </AuthProvider>
+    </MantineProvider>
   );
 }
 
 export default App
-
