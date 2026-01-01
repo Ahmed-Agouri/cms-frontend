@@ -28,7 +28,7 @@ export function AppHeader() {
 
       case 'Admin':
         return [
-          { label: 'Dashboard', icon: IconHome, path: '/admin/dashboard' },
+          { label: 'Dashboard', icon: IconHome, path: '/audit-logs' },
         ];
 
       default:
