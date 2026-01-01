@@ -35,7 +35,7 @@ export function AdminHeader() {
           <Group
             gap="sm"
             style={{ cursor: 'pointer' }}
-            onClick={() => navigate('/admin/dashboard')}
+            onClick={() => navigate('/audit-logs')}
           >
             <Image
               src={cmsLogo}
@@ -52,7 +52,7 @@ export function AdminHeader() {
           <Group gap="lg">
             <Button
               variant="subtle"
-              onClick={() => navigate('/admin/dashboard')}
+              onClick={() => navigate('/audit-logs')}
               size="md"
               style={{ padding: '0.5rem 1rem' }}
             >
